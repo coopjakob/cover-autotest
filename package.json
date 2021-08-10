@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@applitools/eyes-webdriverio": "^5.32.1",
     "@rpii/wdio-html-reporter": "^7.7.1",
     "@wdio/browserstack-service": "^7.9.1",
     "@wdio/cli": "^7.9.1",
