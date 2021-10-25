@@ -1,5 +1,7 @@
 'use strict';
 
+require('dotenv').config()  
+
 const {
   ClassicRunner,
   RunnerOptions,
@@ -10,20 +12,21 @@ const {
   BatchInfo,
   BrowserType,
   DeviceName,
-  ScreenOrientation
+  ScreenOrientation,
+  multiremote
 } = require('@applitools/eyes-webdriverio');
 
 let eyes;
 let configuration;
 let runner;
 
-describe('ACME Demo App - wdio6', function () {
+describe('start', function () {
 
   before(async () => {
     // Create a runner with concurrency of 5
     // You can increase this value if your plan supports a higher concurrency
 
-    const runnerOptions = new RunnerOptions().testConcurrency(5);
+    const runnerOptions = new RunnerOptions().testConcurrency(1);
 
     runner = new ClassicRunner(runnerOptions);
 
@@ -46,9 +49,10 @@ describe('ACME Demo App - wdio6', function () {
 
     configuration.setApiKey(process.env.APPLITOOLS_API_KEY)
 
+
     // create a new batch info instance and set it to the configuration
 
-    configuration.setBatch(new BatchInfo('Classic Batch'))
+    // configuration.setBatch(new BatchInfo('Experiment'))
   });
 
 
@@ -64,34 +68,52 @@ describe('ACME Demo App - wdio6', function () {
     eyes.setConfiguration(configuration);
 
     browser = await eyes.open(browser);
+
+    // const browser = await multiremote({
+    //     myChromeBrowser: {
+    //         capabilities: {
+    //             browserName: 'chrome'
+    //         }
+    //     },
+    //     myFirefoxBrowser: {
+    //         capabilities: {
+    //             browserName: 'firefox'
+    //         }
+    //     }
+    // })
+
   });
 
-  it('classicTest', async () => {
-    // Navigate to the url we want to test
+  it('T63', async () => {
+    await browser.deleteCookies()
+    await browser.setWindowSize(1440, 1440) //914
 
-    await browser.url('https://demo.applitools.com');
+    await browser.url('https://www.coop.se/');
+    
+    const consentButton = await browser.$('.cmpboxbtn.cmpboxbtnyes');
+    await consentButton.click();
+    
+    await browser.setCookies({
+      name: 'abtest',
+      value: 'true'
+    });
 
-    await expect(browser).toHaveTitle('ACME demo app');
+    var login = await browser.$('.js-loginLink');
+    await login.click();
 
-    // ⭐️ Note to see visual bugs, run the test using the above URL for the 1st run.
-    // but then change the above URL to https://demo.applitools.com/index_v2.html
-    // (for the 2nd run)
+    var user = await browser.$('#loginEmail');
+    await user.setValue('jakob.nanneson@coop.se');
+    
+    var password = await browser.$('#loginPassword');
+    await password.setValue('T5jU4b!zJ!4EK78');
 
-    // check the login page with fluent api, see more info here
-    // https://applitools.com/docs/topics/sdk/the-eyes-sdk-check-fluent-api.html
+    await browser.$('.js-submit').click();
 
-    await eyes.check('Login Window', Target.window().fully());
+    await browser.pause(1000)
 
-    // Click the "Log in" button.
-
-    const loginButton = await browser.$('#log-in');
-    await loginButton.click();
-
-    // Check the app page
-
-    await eyes.check('App Window', Target.window().fully());
-
-    // Call Close on eyes to let the server know it should display the results
+    await browser.url('https://www.coop.se/handla/');
+    await browser.$('.T63');
+    await eyes.check('handla', Target.window());
 
     await eyes.closeAsync();
   });
@@ -102,8 +124,8 @@ describe('ACME Demo App - wdio6', function () {
   });
 
   after(async () => {
-    const results = await runner.getAllTestResults(false);
-    console.log(results);
+    // const results = await runner.getAllTestResults(false);
+    // console.log(results);
   });
 
 });
