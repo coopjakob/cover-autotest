@@ -102,7 +102,7 @@ describe('start', function () {
     await login.click();
 
     var user = await browser.$('#loginEmail');
-    await user.setValue('jakob.nanneson@coop.se');
+    await user.setValue('jakob.nanneson+autotest@coop.se');
     
     var password = await browser.$('#loginPassword');
     await password.setValue('T5jU4b!zJ!4EK78');
